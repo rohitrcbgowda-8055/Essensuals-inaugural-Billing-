@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>TONI&GUY ESSENSUALS Billing</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#f3f3f3;font-family:Arial,sans-serif;color:#111}
+.app{max-width:900px;margin:auto;padding:14px}.card{background:#fff;border-radius:14px;padding:18px;box-shadow:0 3px 16px #0001}
+.brand{text-align:center;border-bottom:1px solid #ddd;padding-bottom:14px}.brand h1{font-size:36px;margin:0;font-weight:900}.brand h2{font-size:17px;letter-spacing:4px;margin:4px 0 10px}.brand p{font-size:12px;margin:3px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:18px 0}label{display:block;font-size:11px;font-weight:700;margin-bottom:4px}
+input,select{width:100%;padding:11px;border:1px solid #ccc;border-radius:8px;font-size:15px;background:white}.span2{grid-column:span 2}
+.title{font-size:18px;font-weight:800;margin:14px 0 8px}
+.service{display:grid;grid-template-columns:45px 1fr 150px 140px 150px 42px;gap:7px;align-items:end;margin-bottom:9px}.sn{padding:11px;text-align:center;font-weight:bold}
+.calc{padding:11px;border:1px solid #ddd;background:#f7f7f7;border-radius:8px;text-align:right;font-weight:bold}
+button{font-size:15px;font-weight:800;border:0;border-radius:9px;padding:12px 16px;cursor:pointer;touch-action:manipulation}.add{background:#111;color:#fff}.remove{background:#eee;padding:10px}
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:18px}.print{background:#111;color:#fff}.save{background:#e8e8e8}.new{background:white;border:1px solid #111}
+.totals{max-width:420px;margin:20px 0 0 auto;border-top:2px solid #111;padding-top:10px}.tr{display:flex;justify-content:space-between;padding:6px 0}.grand{font-size:22px;font-weight:900;border-top:1px solid #ddd;margin-top:5px;padding-top:10px}.offer{text-align:center;font-weight:800;margin-top:12px}
+@media(max-width:760px){.service{grid-template-columns:40px 1fr 1fr}.service .discount,.service .amount{grid-column:span 1}}
+@media(max-width:500px){.grid{grid-template-columns:1fr}.span2{grid-column:span 1}.service{grid-template-columns:38px 1fr}.service>div:not(.sn),.service>button{grid-column:span 1}.brand h1{font-size:30px}}
+@media print{body{background:#fff}.card{box-shadow:none;padding:0}.actions,.add,.remove{display:none!important}input,select{border:0;padding:2px}}
+</style>
+</head>
+<body>
+<div class="app"><div class="card">
+<div class="brand">
+<h1>TONI&GUY</h1><h2>ESSENSUALS</h2>
+<p>1st Floor, 1st A Cross Rd, Basaveshwara Layout, Ramakrishnappa Layout, Nagashetty Halli, R.M.V. 2nd Stage, Bengaluru, Karnataka 560094</p>
+<p><b>Phone: 9606033535</b></p>
+</div>
+
+<div class="grid">
+<div class="span2"><label>Customer Name</label><input id="customer" autocomplete="name"></div>
+<div><label>Phone</label><input id="phone" type="tel"></div>
+<div><label>Date</label><input id="date" type="date"></div>
+<div><label>Invoice No.</label><input id="invoice"></div>
+<div><label>Staff / Hairstylist</label><input id="staff"></div>
+<div><label>Payment Mode</label><select id="payment"><option>Cash</option><option>UPI</option><option>Card</option><option>Other</option></select></div>
+</div>
+
+<div class="title">Services</div>
+<div id="services"></div>
+<button type="button" id="addBtn" class="add">＋ Add Service</button>
+
+<div class="totals">
+<div class="tr"><span>Total Price</span><b id="gross">₹0.00</b></div>
+<div class="tr"><span>Inaugural Discount (30%)</span><b id="disc">₹0.00</b></div>
+<div class="tr grand"><span>PAYABLE</span><span id="payable">₹0.00</span></div>
+<div class="offer">INAUGURAL OFFER — FLAT 30% DISCOUNT</div>
+</div>
+
+<div class="actions">
+<button type="button" id="printBtn" class="print">🖨 Print Bill</button>
+<button type="button" id="saveBtn" class="save">💾 Save Bill</button>
+<button type="button" id="newBtn" class="new">＋ New Bill</button>
+</div>
+<div id="status" style="font-size:12px;margin-top:8px;min-height:16px"></div>
+</div></div>
+
+<script>
+(function(){
+"use strict";
+var rowNo=0;
+var $=function(id){return document.getElementById(id)};
+function money(n){return "₹"+Number(n||0).toLocaleString("en-IN",{minimumFractionDigits:2,maximumFractionDigits:2});}
+function today(){return new Date().toISOString().slice(0,10);}
+function nextInvoice(){var n=Number(localStorage.getItem("ess_inv_no")||0)+1;localStorage.setItem("ess_inv_no",n);return "INV-"+String(n).padStart(4,"0");}
+
+function addService(){
+  rowNo++;
+  var row=document.createElement("div");
+  row.className="service";
+  row.innerHTML='<div class="sn">'+rowNo+'</div>'+
+    '<div><label>Service / Product</label><input class="svc" placeholder="e.g. Haircut"></div>'+
+    '<div><label>Original Price (₹)</label><input class="price" type="number" min="0" step="0.01" inputmode="decimal" placeholder="0"></div>'+
+    '<div><label>30% Discount</label><div class="calc discount">₹0.00</div></div>'+
+    '<div><label>Final Amount</label><div class="calc amount">₹0.00</div></div>'+
+    '<button type="button" class="remove">×</button>';
+  $("services").appendChild(row);
+  row.querySelector(".price").addEventListener("input",calculate);
+  row.querySelector(".svc").addEventListener("input",calculate);
+  row.querySelector(".remove").addEventListener("click",function(){row.remove();renumber();calculate();});
+  row.querySelector(".svc").focus();
+}
+function renumber(){document.querySelectorAll(".service .sn").forEach(function(x,i){x.textContent=i+1;});}
+function calculate(){
+ var gross=0,disc=0;
+ document.querySelectorAll(".service").forEach(function(r){
+  var p=Number(r.querySelector(".price").value||0),d=p*.30;
+  gross+=p;disc+=d;r.querySelector(".discount").textContent=money(d);r.querySelector(".amount").textContent=money(p-d);
+ });
+ $("gross").textContent=money(gross);$("disc").textContent=money(disc);$("payable").textContent=money(gross-disc);
+}
+function saveBill(){
+ var services=[];
+ document.querySelectorAll(".service").forEach(function(r){services.push({name:r.querySelector(".svc").value,price:r.querySelector(".price").value});});
+ var bill={customer:$("customer").value,phone:$("phone").value,date:$("date").value,invoice:$("invoice").value,staff:$("staff").value,payment:$("payment").value,services:services,total:$("payable").textContent};
+ var bills=JSON.parse(localStorage.getItem("ess_bills")||"[]");bills.push(bill);localStorage.setItem("ess_bills",JSON.stringify(bills));
+ $("status").textContent="✓ Bill saved on this device.";
+}
+function newBill(){
+ $("customer").value="";$("phone").value="";$("staff").value="";$("date").value=today();$("invoice").value=nextInvoice();
+ $("services").innerHTML="";rowNo=0;$("status").textContent="";addService();calculate();
+}
+$("date").value=today();$("invoice").value=nextInvoice();
+$("addBtn").addEventListener("click",addService);
+function printBill(){
+  calculate();
+
+  // Open a clean print window. This is more reliable on iPhone/iPad than
+  // calling window.print() directly on a GitHub Pages page.
+  var w = window.open("", "_blank");
+  if(!w){
+    alert("Please allow pop-ups for this billing site, then tap Print Bill again.");
+    return;
+  }
+
+  var customer = $("customer").value || "";
+  var phone = $("phone").value || "";
+  var date = $("date").value || "";
+  var invoice = $("invoice").value || "";
+  var staff = $("staff").value || "";
+  var payment = $("payment").value || "";
+
+  var rows = "";
+  document.querySelectorAll(".service").forEach(function(r, i){
+    var name = r.querySelector(".svc").value || "";
+    var price = Number(r.querySelector(".price").value || 0);
+    var discount = price * 0.30;
+    var finalAmount = price - discount;
+    rows += "<tr>" +
+      "<td>" + (i + 1) + "</td>" +
+      "<td>" + name.replace(/</g,"&lt;").replace(/>/g,"&gt;") + "</td>" +
+      "<td>₹" + price.toLocaleString("en-IN",{minimumFractionDigits:2,maximumFractionDigits:2}) + "</td>" +
+      "<td>₹" + discount.toLocaleString("en-IN",{minimumFractionDigits:2,maximumFractionDigits:2}) + "</td>" +
+      "<td>₹" + finalAmount.toLocaleString("en-IN",{minimumFractionDigits:2,maximumFractionDigits:2}) + "</td>" +
+      "</tr>";
+  });
+
+  var gross = $("gross").textContent;
+  var disc = $("disc").textContent;
+  var payable = $("payable").textContent;
+
+  w.document.open();
+  w.document.write('<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1">' +
+    '<title>Bill ' + invoice + '</title>' +
+    '<style>' +
+    '*{box-sizing:border-box}body{font-family:Arial,sans-serif;margin:0;padding:24px;color:#111;background:#fff}' +
+    '.bill{max-width:800px;margin:auto}.brand{text-align:center;border-bottom:2px solid #111;padding-bottom:14px}' +
+    'h1{font-size:34px;margin:0;font-weight:900}h2{font-size:16px;letter-spacing:4px;margin:4px 0 10px}' +
+    '.address{font-size:11px;line-height:1.4}.meta{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin:18px 0;font-size:12px}' +
+    'table{width:100%;border-collapse:collapse;margin-top:12px}th,td{border-bottom:1px solid #ccc;padding:9px 6px;text-align:left;font-size:12px}' +
+    'th{border-bottom:2px solid #111}th:nth-child(n+3),td:nth-child(n+3){text-align:right}' +
+    '.totals{margin:20px 0 0 auto;max-width:350px}.line{display:flex;justify-content:space-between;padding:6px 0;font-size:13px}' +
+    '.grand{border-top:2px solid #111;margin-top:5px;padding-top:10px;font-size:20px;font-weight:900}' +
+    '.offer{text-align:center;font-weight:800;margin-top:18px;font-size:12px}' +
+    '.printHint{margin:18px auto 0;text-align:center;font-size:12px;color:#555}' +
+    '@media print{body{padding:0}.printHint{display:none}}' +
+    '</style></head><body><div class="bill">' +
+    '<div class="brand"><h1>TONI&GUY</h1><h2>ESSENSUALS</h2>' +
+    '<div class="address">1st Floor, 1st A Cross Rd, Basaveshwara Layout, Ramakrishnappa Layout, Nagashetty Halli, R.M.V. 2nd Stage, Bengaluru, Karnataka 560094<br><b>Phone: 9606033535</b></div></div>' +
+    '<div class="meta"><div><b>Customer:</b> ' + customer.replace(/</g,"&lt;") + '</div>' +
+    '<div><b>Phone:</b> ' + phone.replace(/</g,"&lt;") + '</div>' +
+    '<div><b>Date:</b> ' + date + '</div><div><b>Invoice:</b> ' + invoice + '</div>' +
+    '<div><b>Staff:</b> ' + staff.replace(/</g,"&lt;") + '</div><div><b>Payment:</b> ' + payment + '</div></div>' +
+    '<table><thead><tr><th>S.No.</th><th>Service / Product</th><th>Original</th><th>Discount</th><th>Final</th></tr></thead><tbody>' + rows + '</tbody></table>' +
+    '<div class="totals"><div class="line"><span>Total Price</span><b>' + gross + '</b></div>' +
+    '<div class="line"><span>Inaugural Discount (30%)</span><b>' + disc + '</b></div>' +
+    '<div class="line grand"><span>PAYABLE</span><span>' + payable + '</span></div></div>' +
+    '<div class="offer">INAUGURAL OFFER — FLAT 30% DISCOUNT</div>' +
+    '<div class="printHint">Use your browser's Print option. On iPhone: tap Share → Print.</div>' +
+    '</div></body></html>');
+  w.document.close();
+
+  setTimeout(function(){
+    try { w.focus(); w.print(); } catch(e) {}
+  }, 500);
+}
+
+$("printBtn").addEventListener("click", printBill);
+$("saveBtn").addEventListener("click",saveBill);
+$("newBtn").addEventListener("click",newBill);
+addService();
+})();
+</script>
+</body>
+</html>
