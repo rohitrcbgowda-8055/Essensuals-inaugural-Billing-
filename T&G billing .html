@@ -1,0 +1,301 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>TONI&GUY ESSENSUALS — Billing</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#f3f3f3;color:#111;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif}
+.app{max-width:900px;margin:auto;background:#fff;min-height:100vh}
+.header{background:#111;color:#fff;text-align:center;padding:22px 16px 18px}
+.brand{font-size:clamp(30px,8vw,48px);font-weight:900;letter-spacing:-2px}
+.ess{font-size:22px;letter-spacing:5px;margin-top:-3px}
+.address{font-size:12px;line-height:1.5;margin-top:10px;opacity:.95}
+.nav{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px;font-size:12px;letter-spacing:2px}
+.card{margin:14px;padding:14px;border:1px solid #ddd;border-radius:12px;background:#fff;box-shadow:0 2px 10px #0000000b}
+.tabs{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.tab{padding:13px;border:1px solid #ccc;border-radius:9px;text-align:center;font-weight:800;background:#f2f2f2}
+.tab.active{background:#111;color:#fff}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+label{display:block;font-size:12px;font-weight:800;margin:4px 0 6px}
+input,select,textarea{width:100%;padding:12px;border:1px solid #ccc;border-radius:8px;font-size:15px;background:#fff}
+.phone{display:grid;grid-template-columns:auto 1fr;gap:6px}
+.prefix{padding:12px 10px;border:1px solid #ccc;border-radius:8px;background:#eee;font-weight:800}
+.section-title{font-size:18px;font-weight:900;margin:18px 0 10px}
+.service-row{display:grid;grid-template-columns:1.4fr .65fr auto;gap:8px;align-items:end;margin-bottom:8px}
+.iconbtn{padding:11px 12px;border:0;border-radius:8px;background:#eee;font-size:18px}
+.add{width:100%;padding:13px;border:1px solid #bbb;background:#fff;border-radius:8px;font-weight:800}
+.totals{max-width:480px;margin:18px auto 0;border-top:2px solid #111;padding-top:12px}
+.total-line{display:flex;justify-content:space-between;padding:6px 0}
+.discount{color:#d00}
+.grand{font-size:21px;font-weight:900;border-top:1px solid #bbb;margin-top:6px;padding-top:10px}
+.actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px}
+button.action{border:0;border-radius:9px;padding:14px;font-size:15px;font-weight:900}
+.whatsapp{background:#16a34a;color:#fff}.print{background:#111;color:#fff}.save{background:#555;color:#fff}.new{background:#d22;color:#fff}
+.small{font-size:11px;color:#666;margin-top:8px}
+.bill-preview{position:absolute;left:-100000px;top:0;width:794px;background:#fff;color:#111}
+.invoice{padding:38px 48px;min-height:1123px}
+.inv-brand{text-align:center;font-weight:900;font-size:48px;letter-spacing:-2px}
+.inv-ess{text-align:center;font-size:24px;letter-spacing:5px}
+.inv-address{text-align:center;font-size:13px;line-height:1.55;margin-top:12px}
+.rule{border-top:2px solid #111;margin:20px 0}
+.inv-title{text-align:center;font-size:25px;font-weight:900;letter-spacing:1px}
+.meta{display:grid;grid-template-columns:150px 1fr;gap:5px;font-size:16px;margin:18px 0}
+.inv-table{width:100%;border-collapse:collapse;font-size:15px}
+.inv-table th,.inv-table td{border-bottom:1px solid #ccc;padding:10px 7px;text-align:left}
+.inv-table th:last-child,.inv-table td:last-child{text-align:right}
+.inv-totals{width:330px;margin-left:auto;margin-top:18px;font-size:16px}
+.inv-total{font-size:22px;font-weight:900;border-top:2px solid #111;padding-top:9px;margin-top:5px}
+.thanks{text-align:center;margin-top:50px;font-size:17px;line-height:1.55}
+.qrbox{text-align:center;margin-top:28px}
+.qr{width:120px;height:120px;image-rendering:auto}
+.footerline{text-align:center;letter-spacing:4px;font-size:11px;margin-top:28px}
+@media(max-width:600px){
+ .grid{grid-template-columns:1fr}.service-row{grid-template-columns:1fr 1fr auto}
+ .card{margin:10px}.header{padding-top:18px}
+}
+@media print{
+ body{background:#fff}
+ .app{display:none!important}
+ .bill-preview{position:static!important;left:auto!important;width:100%!important}
+ .invoice{min-height:auto;padding:20mm 15mm}
+ @page{size:A4;margin:0}
+}
+</style>
+</head>
+<body>
+<div class="app">
+<header class="header">
+  <div class="brand">TONI&GUY</div>
+  <div class="ess">essensuals</div>
+  <div class="address">1st Floor, A Cross Rd, Basaveshwara Layout, Ramakrishnappa Layout,<br>Nagashetty Halli, R.M.V. 2nd Stage, Bengaluru - 560094<br>Ph: 9606033535</div>
+  <div class="nav"><span>HAIR</span><span>BEAUTY</span><span>MAKEUP</span></div>
+</header>
+
+<section class="card" id="mainCard">
+ <div class="tabs"><button class="tab active" type="button" id="newTab" onclick="showTab('new')">New Bill</button><button class="tab" type="button" id="savedTab" onclick="showTab('saved')">Saved Bills</button></div>
+ <div id="savedPanel" style="display:none;margin-top:12px"></div>
+ <div class="grid" style="margin-top:12px">
+  <div><label>Invoice No.</label><input id="invoiceNo"></div>
+  <div><label>Date</label><input id="date" type="date"></div>
+ </div>
+ <div style="margin-top:10px"><label>Customer Name</label><input id="customerName" placeholder="Enter customer name"></div>
+ <div class="grid" style="margin-top:10px">
+  <div><label>Phone Number</label><div class="phone"><span class="prefix">+91</span><input id="phone" inputmode="numeric" maxlength="10" placeholder="10-digit number"></div></div>
+  <div><label>Staff</label><input id="staff" placeholder="Staff name"></div>
+ </div>
+
+ <div class="section-title">Services</div>
+ <div id="services"></div>
+ <button class="add" type="button" onclick="addService()">＋ Add Service</button>
+
+ <div class="totals">
+  <div class="total-line"><span>Subtotal</span><strong id="subtotal">₹0</strong></div>
+  <div class="total-line discount"><span>Discount (30%)</span><strong id="discount">- ₹0</strong></div>
+  <div class="total-line grand"><span>Total Amount</span><strong id="total">₹0</strong></div>
+ </div>
+
+ <div style="margin-top:16px"><label>Notes (Optional)</label><textarea id="notes" rows="3" placeholder="Add any notes..."></textarea></div>
+ <div class="actions">
+   <button class="action whatsapp" type="button" onclick="shareBillImage()">🟢 Send Bill Image on WhatsApp</button>
+   <button class="action print" type="button" onclick="printBill()">🖨️ Print Bill</button>
+   <button class="action save" type="button" onclick="saveBill()">⬇️ Save Bill</button>
+   <button class="action new" type="button" onclick="newBill()">↻ New Bill</button>
+ </div>
+ <div class="small">WhatsApp on iPhone: the app creates the original-looking bill image and opens the iPhone share sheet so you can choose WhatsApp and send the image.</div>
+</section>
+</div>
+
+<div id="billPreview" class="bill-preview">
+ <div class="invoice">
+  <div class="inv-brand">TONI&GUY</div>
+  <div class="inv-ess">essensuals</div>
+  <div class="inv-address">1st Floor, A Cross Rd, Basaveshwara Layout, Ramakrishnappa Layout,<br>Nagashetty Halli, R.M.V. 2nd Stage, Bengaluru - 560094<br>Ph: 9606033535</div>
+  <div class="rule"></div>
+  <div class="inv-title">TAX INVOICE</div>
+  <div class="meta">
+   <div>Invoice No</div><div>: <strong id="pInvoice"></strong></div>
+   <div>Date</div><div>: <span id="pDate"></span></div>
+   <div>Customer</div><div>: <span id="pCustomer"></span></div>
+   <div>Phone</div><div>: <span id="pPhone"></span></div>
+   <div>Staff</div><div>: <span id="pStaff"></span></div>
+  </div>
+  <table class="inv-table"><thead><tr><th>S.No</th><th>Service</th><th>Price (₹)</th></tr></thead><tbody id="pRows"></tbody></table>
+  <div class="inv-totals">
+   <div class="total-line"><span>Subtotal</span><strong id="pSubtotal"></strong></div>
+   <div class="total-line discount"><span>Discount (30%)</span><strong id="pDiscount"></strong></div>
+   <div class="total-line inv-total"><span>Total Amount</span><strong id="pTotal"></strong></div>
+  </div>
+  <div class="thanks">Thank you for choosing<br><strong>TONI&GUY essensuals.</strong><br>We look forward to seeing you again!</div>
+  <div class="qrbox"><img id="qr" class="qr" alt="QR"></div>
+  <div style="text-align:center;margin-top:8px;font-size:13px">Follow us on Instagram<br><strong>@toniandguy_essensuals_rmv</strong></div>
+  <div class="footerline">BEAUTIFUL HAIR. A MORE BEAUTIFUL YOU.</div>
+ </div>
+</div>
+
+<script>
+const SERVICES=["Haircut - Women","Haircut - Men","Hair Spa","Blow Dry","Hair Colour","Global Colour","Highlights","Keratin","Smoothening","Facial","Cleanup","Manicure","Pedicure","Makeup"];
+let rows=[];
+
+function money(n){return "₹"+Math.round(n).toLocaleString("en-IN")}
+function today(){return new Date().toISOString().slice(0,10)}
+function prettyDate(v){if(!v)return ""; const [y,m,d]=v.split("-"); return d+"/"+m+"/"+y}
+function showTab(tab){
+ const main=document.getElementById("mainCard");
+ const panel=document.getElementById("savedPanel");
+ const nt=document.getElementById("newTab"), st=document.getElementById("savedTab");
+ if(tab==="saved"){
+   Array.from(main.children).forEach((el,i)=>{if(i>0 && el.id!=="savedPanel") el.style.display="none";});
+   panel.style.display="block"; nt.classList.remove("active"); st.classList.add("active");
+   const raw=localStorage.getItem("essensuals_last_bill");
+   if(!raw){panel.innerHTML='<div class="small">No saved bill on this device yet.</div>';return;}
+   const b=JSON.parse(raw);
+   panel.innerHTML=`<div style="padding:14px;border:1px solid #ddd;border-radius:9px"><strong>${esc(b.invoice)}</strong><br>${esc(b.customer)}<br>Total: <strong>${money(b.total)}</strong><br><button class="add" type="button" style="margin-top:10px" onclick="loadSavedBill()">Load This Bill</button></div>`;
+ }else{
+   Array.from(main.children).forEach((el,i)=>{if(i>0 && el.id!=="savedPanel") el.style.display="";});
+   panel.style.display="none"; nt.classList.add("active"); st.classList.remove("active");
+ }
+}
+function loadSavedBill(){
+ const raw=localStorage.getItem("essensuals_last_bill"); if(!raw)return;
+ const b=JSON.parse(raw);
+ document.getElementById("invoiceNo").value=b.invoice||"";
+ const [d,m,y]=(b.date||"").split("/"); if(d&&m&&y)document.getElementById("date").value=`${y}-${m}-${d}`;
+ document.getElementById("customerName").value=b.customer==="Walk-in Customer"?"":b.customer||"";
+ document.getElementById("phone").value=b.phone||"";
+ document.getElementById("staff").value=b.staff||"";
+ document.getElementById("notes").value=b.notes||"";
+ rows=b.rows||[{name:"",price:""}]; render(); showTab("new");
+}
+function init(){
+ const d=new Date(); const num="TG"+String(d.getTime()).slice(-6);
+ document.getElementById("invoiceNo").value=num;
+ document.getElementById("date").value=today();
+ rows=[{name:"",price:""}];
+ render();
+}
+function addService(){rows.push({name:"",price:""});render()}
+function removeService(i){rows.splice(i,1);if(!rows.length)rows.push({name:"",price:""});render()}
+function render(){
+ const box=document.getElementById("services");
+ box.innerHTML=rows.map((r,i)=>`<div class="service-row">
+   <select onchange="rows[${i}].name=this.value">
+    <option value="">Select service</option>${SERVICES.map(s=>`<option ${s===r.name?"selected":""}>${s}</option>`).join("")}
+   </select>
+   <input type="number" min="0" step="1" placeholder="Price" value="${r.price}" oninput="rows[${i}].price=this.value;updateTotals()">
+   <button class="iconbtn" type="button" onclick="removeService(${i})">🗑️</button>
+ </div>`).join("");
+ updateTotals();
+}
+function updateTotals(){
+ const subtotal=rows.reduce((a,r)=>a+(parseFloat(r.price)||0),0), disc=subtotal*.30, total=subtotal-disc;
+ document.getElementById("subtotal").textContent=money(subtotal);
+ document.getElementById("discount").textContent="- "+money(disc);
+ document.getElementById("total").textContent=money(total);
+}
+function collect(){
+ const name=document.getElementById("customerName").value.trim()||"Walk-in Customer";
+ const phone=document.getElementById("phone").value.replace(/\D/g,"");
+ if(phone && phone.length!==10){alert("Please enter a valid 10-digit customer phone number.");return null}
+ const valid=rows.filter(r=>r.name && (parseFloat(r.price)||0)>0);
+ if(!valid.length){alert("Please add at least one service with a price.");return null}
+ const subtotal=valid.reduce((a,r)=>a+parseFloat(r.price),0), discount=subtotal*.30, total=subtotal-discount;
+ return {
+  invoice:document.getElementById("invoiceNo").value.trim(),
+  date:prettyDate(document.getElementById("date").value),
+  customer:name,phone,staff:document.getElementById("staff").value.trim(),
+  notes:document.getElementById("notes").value.trim(),rows:valid,subtotal,discount,total
+ };
+}
+function fillPreview(b){
+ document.getElementById("pInvoice").textContent=b.invoice;
+ document.getElementById("pDate").textContent=b.date;
+ document.getElementById("pCustomer").textContent=b.customer;
+ document.getElementById("pPhone").textContent=b.phone?"+91 "+b.phone:"—";
+ document.getElementById("pStaff").textContent=b.staff||"—";
+ document.getElementById("pRows").innerHTML=b.rows.map((r,i)=>`<tr><td>${i+1}</td><td>${r.name}</td><td>${Math.round(r.price).toLocaleString("en-IN")}</td></tr>`).join("");
+ document.getElementById("pSubtotal").textContent=money(b.subtotal);
+ document.getElementById("pDiscount").textContent="- "+money(b.discount);
+ document.getElementById("pTotal").textContent=money(b.total);
+ document.getElementById("qr").src="https://api.qrserver.com/v1/create-qr-code/?size=240x240&data="+encodeURIComponent("TONI&GUY ESSENSUALS | "+b.invoice+" | "+b.total);
+}
+function printBill(){
+ const b=collect(); if(!b)return; fillPreview(b); setTimeout(()=>window.print(),150);
+}
+function saveBill(){
+ const b=collect(); if(!b)return;
+ localStorage.setItem("essensuals_last_bill",JSON.stringify(b));
+ alert("Bill saved on this device.");
+}
+function newBill(){
+ if(!confirm("Start a new bill?"))return;
+ document.getElementById("invoiceNo").value="TG"+String(Date.now()).slice(-6);
+ document.getElementById("date").value=today();
+ ["customerName","phone","staff","notes"].forEach(id=>document.getElementById(id).value="");
+ rows=[{name:"",price:""}];render();
+}
+async function shareBillImage(){
+ const b=collect(); if(!b)return;
+ fillPreview(b);
+ // Use a self-contained SVG rendered to PNG so the customer receives an actual bill image.
+ const svg=`<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="1697" viewBox="0 0 1200 1697">
+ <rect width="1200" height="1697" fill="white"/>
+ <text x="600" y="90" text-anchor="middle" font-family="Arial,sans-serif" font-size="70" font-weight="900">TONI&amp;GUY</text>
+ <text x="600" y="135" text-anchor="middle" font-family="Arial,sans-serif" font-size="30" letter-spacing="8">essensuals</text>
+ <text x="600" y="180" text-anchor="middle" font-family="Arial,sans-serif" font-size="17">1st Floor, A Cross Rd, Basaveshwara Layout, Ramakrishnappa Layout,</text>
+ <text x="600" y="208" text-anchor="middle" font-family="Arial,sans-serif" font-size="17">Nagashetty Halli, R.M.V. 2nd Stage, Bengaluru - 560094 | Ph: 9606033535</text>
+ <line x1="70" y1="245" x2="1130" y2="245" stroke="#111" stroke-width="3"/>
+ <text x="600" y="300" text-anchor="middle" font-family="Arial,sans-serif" font-size="32" font-weight="900">TAX INVOICE</text>
+ <g font-family="Arial,sans-serif" font-size="22">
+ <text x="90" y="355">Invoice No</text><text x="320" y="355">: ${esc(b.invoice)}</text>
+ <text x="90" y="390">Date</text><text x="320" y="390">: ${esc(b.date)}</text>
+ <text x="90" y="425">Customer</text><text x="320" y="425">: ${esc(b.customer)}</text>
+ <text x="90" y="460">Phone</text><text x="320" y="460">: ${b.phone?"+91 "+b.phone:"—"}</text>
+ <text x="90" y="495">Staff</text><text x="320" y="495">: ${esc(b.staff||"—")}</text></g>
+ <line x1="70" y1="530" x2="1130" y2="530" stroke="#111" stroke-width="2"/>
+ <text x="90" y="565" font-family="Arial,sans-serif" font-size="20" font-weight="900">S.No</text>
+ <text x="180" y="565" font-family="Arial,sans-serif" font-size="20" font-weight="900">Service</text>
+ <text x="1090" y="565" text-anchor="end" font-family="Arial,sans-serif" font-size="20" font-weight="900">Price (₹)</text>
+ ${b.rows.map((r,i)=>`<line x1="70" y1="${590+i*52}" x2="1130" y2="${590+i*52}" stroke="#ccc"/>
+ <text x="90" y="${625+i*52}" font-family="Arial,sans-serif" font-size="19">${i+1}</text>
+ <text x="180" y="${625+i*52}" font-family="Arial,sans-serif" font-size="19">${esc(r.name)}</text>
+ <text x="1090" y="${625+i*52}" text-anchor="end" font-family="Arial,sans-serif" font-size="19">${Math.round(r.price).toLocaleString("en-IN")}</text>`).join("")}
+ <line x1="70" y1="${610+b.rows.length*52}" x2="1130" y2="${610+b.rows.length*52}" stroke="#ccc"/>
+ <g font-family="Arial,sans-serif" font-size="21">
+ <text x="780" y="${665+b.rows.length*52}">Subtotal</text><text x="1090" y="${665+b.rows.length*52}" text-anchor="end">${money(b.subtotal)}</text>
+ <text x="780" y="${705+b.rows.length*52}" fill="#d00">Discount (30%)</text><text x="1090" y="${705+b.rows.length*52}" text-anchor="end" fill="#d00">- ${money(b.discount)}</text>
+ </g>
+ <line x1="760" y1="${725+b.rows.length*52}" x2="1130" y2="${725+b.rows.length*52}" stroke="#111" stroke-width="3"/>
+ <text x="780" y="${765+b.rows.length*52}" font-family="Arial,sans-serif" font-size="29" font-weight="900">Total Amount</text>
+ <text x="1090" y="${765+b.rows.length*52}" text-anchor="end" font-family="Arial,sans-serif" font-size="29" font-weight="900">${money(b.total)}</text>
+ <text x="600" y="${900+b.rows.length*52}" text-anchor="middle" font-family="Arial,sans-serif" font-size="24">Thank you for choosing</text>
+ <text x="600" y="${940+b.rows.length*52}" text-anchor="middle" font-family="Arial,sans-serif" font-size="27" font-weight="900">TONI&amp;GUY essensuals.</text>
+ <text x="600" y="${980+b.rows.length*52}" text-anchor="middle" font-family="Arial,sans-serif" font-size="21">We look forward to seeing you again!</text>
+ <text x="600" y="${1060+b.rows.length*52}" text-anchor="middle" font-family="Arial,sans-serif" font-size="17">Follow us on Instagram</text>
+ <text x="600" y="${1090+b.rows.length*52}" text-anchor="middle" font-family="Arial,sans-serif" font-size="19" font-weight="700">@toniandguy_essensuals_rmv</text>
+ <text x="600" y="${1160+b.rows.length*52}" text-anchor="middle" font-family="Arial,sans-serif" font-size="15" letter-spacing="5">BEAUTIFUL HAIR. A MORE BEAUTIFUL YOU.</text>
+ </svg>`;
+ const blob=await svgToPng(svg,1200,1697);
+ const file=new File([blob], `${b.invoice}_Bill.png`, {type:"image/png"});
+ if(navigator.share && navigator.canShare && navigator.canShare({files:[file]})){
+   try{await navigator.share({title:"TONI&GUY ESSENSUALS Bill",text:"Your bill from TONI&GUY ESSENSUALS",files:[file]});return}catch(e){}
+ }
+ // Fallback: download the image and open WhatsApp with the number.
+ const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=file.name;a.click();
+ if(b.phone) window.open("https://wa.me/91"+b.phone+"?text="+encodeURIComponent("Your TONI&GUY ESSENSUALS bill is attached. Invoice "+b.invoice+" — Total "+money(b.total)),"_blank");
+ else alert("Bill image created. Share the downloaded PNG to WhatsApp.");
+}
+function esc(s){return String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]))}
+function svgToPng(svg,w,h){
+ return new Promise((resolve,reject)=>{
+  const img=new Image();
+  img.onload=()=>{const c=document.createElement("canvas");c.width=w;c.height=h;const x=c.getContext("2d");x.fillStyle="#fff";x.fillRect(0,0,w,h);x.drawImage(img,0,0,w,h);c.toBlob(resolve,"image/png",1)};
+  img.onerror=reject;
+  img.src="data:image/svg+xml;charset=utf-8,"+encodeURIComponent(svg);
+ })
+}
+init();
+</script>
+</body>
+</html>
