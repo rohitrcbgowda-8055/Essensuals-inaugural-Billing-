@@ -34,12 +34,11 @@ input,textarea{width:100%;padding:12px;border:1px solid #ccc;border-radius:9px;f
 <div class="totals"><div class="totalline"><span>Subtotal</span><strong id="subtotal">₹0.00</strong></div><div class="totalline"><span>Inaugural Discount (30%)</span><strong id="discount">− ₹0.00</strong></div><div class="totalline grand"><span>Total</span><strong id="total">₹0.00</strong></div></div></div>
 <div class="card"><label>Notes</label><textarea id="notes" rows="3" placeholder="Optional"></textarea></div>
 <div class="card actions">
-<button id="sendPdf" class="primary">Send PDF on WhatsApp</button><button id="printBill" class="secondary">Print Bill</button><button id="saveBill" class="secondary">Save Bill</button><button id="newBill" class="danger">New Bill</button>
+<button id="sendPdf" class="primary">Send PDF on WhatsApp</button><button id="printBill" class="secondary">Print Bill</button><button id="saveBill" class="secondary">Save Bill PDF</button><button id="newBill" class="danger">New Bill</button>
 </div>
 <div class="bill-preview"><div class="invoice" id="printInvoice"></div></div>
 </div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.2/jspdf.umd.min.js"></script>
 <script>
 "use strict";
 const API_URL="YOUR_WORKER_URL/send-bill";
@@ -69,28 +68,126 @@ function invoiceHTML(d){
  ${d.notes?`<div style="margin-top:15px;font-size:11px"><b>Notes:</b> ${esc(d.notes)}</div>`:""}<div class="thanks">Thank you for visiting TONI&amp;GUY ESSENSUALS</div>`;
 }
 function printBill(){const d=bill();if(!valid(d))return;$("printInvoice").innerHTML=invoiceHTML(d);window.print()}
-function saveBill(){const d=bill();if(!valid(d))return;localStorage.setItem("ess_last_bill",JSON.stringify(d));status("Bill saved successfully.")}
-function newBill(){$("invoiceNo").value=inv();$("billDate").value=today();["customerName","phone","staff","notes"].forEach(x=>$(x).value="");$("services").innerHTML="";addService();status("New bill ready.")}
+async function saveBill(){
+ const d=bill();
+ if(!valid(d)) return;
+ try{
+   const blob=await makePdf(d);
+   localStorage.setItem("ess_last_bill",JSON.stringify(d));
+   const url=URL.createObjectURL(blob);
+   const a=document.createElement("a");
+   a.href=url;
+   a.download="ESSENSUALS-"+(d.invoice||"Bill")+".pdf";
+   a.style.display="none";
+   document.body.appendChild(a);
+   a.click();
+   setTimeout(()=>{a.remove();URL.revokeObjectURL(url)},1500);
+   status("PDF downloaded successfully.");
+ }catch(e){
+   console.error(e);
+   status("Save Bill failed. Please try again.");
+ }
+}
+function newBill(){
+ if(!confirm("Start a new bill? Unsaved entries will be cleared.")) return;
+ $("invoiceNo").value=inv();
+ $("billDate").value=today();
+ ["customerName","phone","staff","notes"].forEach(x=>$(x).value="");
+ $("services").innerHTML="";
+ addService();
+ status("New bill ready.");
+}
 async function makePdf(d){
- const {jsPDF}=window.jspdf;const pdf=new jsPDF({unit:"mm",format:"a4"});let y=18;
- pdf.setFont("helvetica","bold");pdf.setFontSize(24);pdf.text("TONI&GUY",105,y,{align:"center"});y+=9;pdf.setFontSize(11);pdf.text("ESSENSUALS",105,y,{align:"center"});y+=8;
- pdf.setFont("helvetica","normal");pdf.setFontSize(8);pdf.text("1st Floor, 1st A Cross Rd, Basaveshwara Layout, Ramakrishnappa Layout,",105,y,{align:"center"});y+=4;pdf.text("Nagashetty Halli, R.M.V. 2nd Stage, Bengaluru, Karnataka 560094",105,y,{align:"center"});y+=4;pdf.text("Ph: 9606033535",105,y,{align:"center"});y+=8;pdf.line(15,y,195,y);y+=9;
- pdf.setFontSize(10);pdf.setFont("helvetica","bold");pdf.text("Customer:",15,y);pdf.setFont("helvetica","normal");pdf.text(d.name,42,y);pdf.setFont("helvetica","bold");pdf.text("Invoice:",125,y);pdf.setFont("helvetica","normal");pdf.text(d.invoice,148,y);y+=6;
- pdf.setFont("helvetica","bold");pdf.text("Phone:",15,y);pdf.setFont("helvetica","normal");pdf.text("+91 "+d.phone,42,y);pdf.setFont("helvetica","bold");pdf.text("Date:",125,y);pdf.setFont("helvetica","normal");pdf.text(d.date,148,y);y+=6;
- pdf.setFont("helvetica","bold");pdf.text("Staff:",15,y);pdf.setFont("helvetica","normal");pdf.text(d.staff||"-",42,y);y+=10;
- pdf.setFont("helvetica","bold");pdf.text("No.",18,y);pdf.text("Service",35,y);pdf.text("Amount",185,y,{align:"right"});y+=4;pdf.line(15,y,195,y);y+=7;pdf.setFont("helvetica","normal");
- d.services.forEach((x,i)=>{let lines=pdf.splitTextToSize(x.name||"Service",135);pdf.text(String(i+1),18,y);pdf.text(lines,35,y);pdf.text(money(x.price),185,y,{align:"right"});y+=Math.max(6,lines.length*5);pdf.line(15,y-3,195,y-3)});
- y+=6;pdf.setFont("helvetica","normal");pdf.text("Subtotal",145,y);pdf.text(money(d.subtotal),185,y,{align:"right"});y+=6;pdf.text("Inaugural Discount 30%",145,y);pdf.text("− "+money(d.discount),185,y,{align:"right"});y+=8;pdf.setFont("helvetica","bold");pdf.text("TOTAL",145,y);pdf.text(money(d.total),185,y,{align:"right"});y+=10;
- if(d.notes){pdf.setFont("helvetica","bold");pdf.text("Notes:",15,y);pdf.setFont("helvetica","normal");pdf.text(pdf.splitTextToSize(d.notes,160),32,y);y+=10}
- pdf.setFontSize(8);pdf.text("Thank you for visiting TONI&GUY ESSENSUALS",105,285,{align:"center"});
- return pdf.output("blob");
+  // Minimal local PDF generator: no CDN, no external library.
+  // Creates a valid A4 PDF with the bill text and basic layout.
+  const escPdf = s => String(s ?? "").replace(/\\/g,"\\\\").replace(/\(/g,"\\(").replace(/\)/g,"\\)");
+  const lines = [];
+  lines.push("TONI&GUY");
+  lines.push("ESSENSUALS");
+  lines.push("1st Floor, 1st A Cross Rd, Basaveshwara Layout, Ramakrishnappa Layout,");
+  lines.push("Nagashetty Halli, R.M.V. 2nd Stage, Bengaluru, Karnataka 560094");
+  lines.push("Ph: 9606033535");
+  lines.push("");
+  lines.push("Customer: " + d.name);
+  lines.push("Phone: +91 " + d.phone);
+  lines.push("Invoice: " + d.invoice);
+  lines.push("Date: " + d.date);
+  lines.push("Staff: " + (d.staff || "-"));
+  lines.push("");
+  lines.push("SERVICES");
+  d.services.forEach((x,i)=>lines.push((i+1)+". "+(x.name||"Service")+" - "+money(x.price)));
+  lines.push("");
+  lines.push("Subtotal: " + money(d.subtotal));
+  lines.push("Inaugural Discount 30%: - " + money(d.discount));
+  lines.push("TOTAL: " + money(d.total));
+  if(d.notes){ lines.push(""); lines.push("Notes: "+d.notes); }
+  lines.push("");
+  lines.push("Thank you for visiting TONI&GUY ESSENSUALS");
+
+  // Basic PDF with Helvetica, line-wrapped to fit A4.
+  const maxChars = 82, wrapped=[];
+  lines.forEach(line=>{
+    const s=String(line);
+    if(!s){wrapped.push("");return}
+    for(let i=0;i<s.length;i+=maxChars) wrapped.push(s.slice(i,i+maxChars));
+  });
+
+  const pageW=595, pageH=842, left=42, top=800, lineH=15;
+  let stream="BT\n";
+  stream+="/F1 18 Tf\n";
+  stream+=`${left} ${top} Td\n`;
+  wrapped.forEach((line,i)=>{
+    if(i===1) stream+="/F1 10 Tf\n";
+    if(i>1) stream+=`0 -${lineH} Td\n`;
+    stream+=`(${escPdf(line)}) Tj\n`;
+  });
+  stream+="ET\n";
+
+  const objects=[];
+  objects.push("<< /Type /Catalog /Pages 2 0 R >>");
+  objects.push("<< /Type /Pages /Kids [3 0 R] /Count 1 >>");
+  objects.push("<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 4 0 R >> >> /Contents 5 0 R >>");
+  objects.push("<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>");
+  objects.push(`<< /Length ${stream.length} >>\nstream\n${stream}endstream`);
+
+  let pdf="%PDF-1.4\n";
+  const offsets=[0];
+  objects.forEach((obj,i)=>{
+    offsets[i+1]=pdf.length;
+    pdf+=(i+1)+" 0 obj\n"+obj+"\nendobj\n";
+  });
+  const xref=pdf.length;
+  pdf+="xref\n0 "+(objects.length+1)+"\n";
+  pdf+="0000000000 65535 f \n";
+  for(let i=1;i<=objects.length;i++) pdf+=String(offsets[i]).padStart(10,"0")+" 00000 n \n";
+  pdf+="trailer\n<< /Size "+(objects.length+1)+" /Root 1 0 R >>\nstartxref\n"+xref+"\n%%EOF";
+
+  return new Blob([pdf],{type:"application/pdf"});
 }
 async function sendPdf(){
- const d=bill();if(!valid(d))return;
- if(API_URL.includes("YOUR_WORKER_URL")){status("Set your WhatsApp Worker URL in index.html first.");return}
- try{status("Creating PDF…");const blob=await makePdf(d);const fd=new FormData();fd.append("phone",d.phone);fd.append("customerName",d.name);fd.append("invoice",d.invoice);fd.append("pdf",blob,"ESSENSUALS-"+d.invoice+".pdf");
- const r=await fetch(API_URL,{method:"POST",body:fd});const out=await r.json().catch(()=>({}));if(!r.ok||!out.ok)throw new Error(out.error||"WhatsApp send failed");status("Bill sent successfully to +91 "+d.phone);}
- catch(e){console.error(e);status("Could not send bill: "+e.message)}
+ const d=bill();
+ if(!valid(d)) return;
+ const api = API_URL;
+ if(!api || api.includes("YOUR_WORKER_URL")){
+   status("WhatsApp is not connected yet. PDF is ready — configure the WhatsApp Business API Worker to send it directly.");
+   return;
+ }
+ try{
+   status("Sending PDF to WhatsApp…");
+   const blob=await makePdf(d);
+   const fd=new FormData();
+   fd.append("phone",d.phone);
+   fd.append("customerName",d.name);
+   fd.append("invoice",d.invoice);
+   fd.append("pdf",blob,"ESSENSUALS-"+d.invoice+".pdf");
+   const r=await fetch(api,{method:"POST",body:fd});
+   const out=await r.json().catch(()=>({}));
+   if(!r.ok||!out.ok) throw new Error(out.error||"WhatsApp send failed");
+   status("Bill sent successfully to +91 "+d.phone+".");
+ }catch(e){
+   console.error(e);
+   status("WhatsApp setup error: "+e.message);
+ }
 }
 $("addService").onclick=()=>addService();$("printBill").onclick=printBill;$("saveBill").onclick=saveBill;$("newBill").onclick=newBill;$("sendPdf").onclick=sendPdf;
 $("invoiceNo").value=inv();$("billDate").value=today();addService();
