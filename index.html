@@ -2,8 +2,35 @@
 @media print{body{background:#fff}.top,.no-print,.card:not(.print-card),.status{display:none!important}.wrap{margin:0;padding:0}.grid{display:block}.print-card{display:block;border:0;box-shadow:none;padding:0}.preview{border:0;max-width:none}}
 </style></head><body><div class="top"><div class="brand">TONI&GUY <small>ESSENSUALS</small></div><a href="ESSENSUALS-Customer-Marketing.html">Customer & Marketing</a></div><div class="wrap"><div id="status" class="status"></div><div class="grid"><div><div class="card"><h2>Bill Details</h2><div class="fields"><div><label>Invoice No.</label><input id="invoice"></div><div><label>Date</label><input id="date" type="date"></div><div><label>Customer Name</label><input id="name" placeholder="Customer name"></div><div><label>Customer Phone</label><input id="phone" inputmode="numeric" maxlength="10" placeholder="10-digit number"></div><div><label>Staff</label><input id="staff"></div><div><label>Discount %</label><input id="discount" type="number" min="0" max="100" value="30"></div></div></div><div class="card"><h2>Services</h2><div id="services"></div><button class="btn secondary" id="add">＋ Add Service</button><div class="actions"><button class="btn primary" id="save">Save Bill</button><button class="btn primary" id="wa">Copy Bill Image & Open WhatsApp</button><button class="btn secondary" id="print">Print Bill</button><button class="btn secondary" id="new">New Bill</button></div></div><div class="card"><h2>Saved Bills</h2><input id="billSearch" placeholder="Search invoice or customer"><div class="list" id="billList"></div></div></div><div><div class="card print-card"><h2>Live Bill Preview</h2><div class="preview" id="preview"></div></div><div class="card no-print"><h2>Shared Customer Database</h2><p style="font-size:12px;color:#666">This database is shared with the Customer & Marketing app when both are opened from the same website/domain.</p><div class="actions"><button class="btn secondary" id="refresh">Refresh Customer Data</button><button class="btn secondary" id="backup">Export Backup</button></div><div class="list" id="customers"></div></div></div></div></div><script>
 const DB_NAME='ESSENSUALS_SHARED_DB_V1'; const DB_VER=1;
-function dbOpen(){return new Promise((res,rej)=>{const r=indexedDB.open(DB_NAME,DB_VER);r.onupgradeneeded=()=>{const d=r.result;['customers','bills','reminders','meta'].forEach(s=>{if(!d.objectStoreNames.contains(s)){const key=s==='meta'?'key':'id';d.createObjectStore(s,{keyPath:key,autoIncrement:key==='id'});}})};r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)})}
-async function tx(store,mode,fn){const d=await dbOpen();return new Promise((res,rej)=>{const t=d.transaction(store,mode);const s=t.objectStore(store);let out;try{out=fn(s)}catch(e){rej(e);return}t.oncomplete=()=>res(out);t.onerror=()=>rej(t.error)})}
+function makeFallbackDB(){
+ const prefix='ESSENSUALS_FALLBACK_'+DB_NAME+'_';
+ const mem={customers:[],bills:[],reminders:[],meta:[]};
+ const canLS=()=>{try{const k='__ess_test__';localStorage.setItem(k,'1');localStorage.removeItem(k);return true}catch(e){return false}};
+ const useLS=canLS();
+ const load=k=>{if(!useLS)return mem[k].slice();try{return JSON.parse(localStorage.getItem(prefix+k)||'[]')}catch(e){return mem[k].slice()}};
+ const save=(k,v)=>{if(!useLS){mem[k]=v.slice();return}try{localStorage.setItem(prefix+k,JSON.stringify(v))}catch(e){mem[k]=v.slice()}};
+ const stores=['customers','bills','reminders','meta'];
+ stores.forEach(k=>{if(useLS){try{if(localStorage.getItem(prefix+k)===null)save(k,[])}catch(e){}}});
+ return {transaction:(name)=>({objectStore:()=>({
+   getAll:()=>{const q={result:load(name)};setTimeout(()=>q.onsuccess&&q.onsuccess({target:q}),0);return q},
+   get:(key)=>{const arr=load(name), keyName=name==='meta'?'key':'id';const q={result:arr.find(x=>x[keyName]===key)};setTimeout(()=>q.onsuccess&&q.onsuccess({target:q}),0);return q},
+   put:(value)=>{const arr=load(name), keyName=name==='meta'?'key':'id';let v={...value};if(keyName==='id' && (v.id===undefined||v.id===null)){const ids=arr.map(x=>Number(x.id)||0);v.id=(ids.length?Math.max(...ids):0)+1}const i=arr.findIndex(x=>x[keyName]===v[keyName]);if(i>=0)arr[i]=v;else arr.push(v);save(name,arr);return {result:v}},
+   delete:(key)=>{const arr=load(name),keyName=name==='meta'?'key':'id';save(name,arr.filter(x=>x[keyName]!==key));return {result:undefined}}
+ }) ,oncomplete:null,onerror:null})};
+}
+let fallbackDB=null;
+function dbOpen(){return new Promise((res,rej)=>{
+ try{
+  if(!window.indexedDB) throw new Error('IndexedDB unavailable');
+  const r=indexedDB.open(DB_NAME,DB_VER);
+  r.onupgradeneeded=()=>{const d=r.result;['customers','bills','reminders','meta'].forEach(s=>{if(!d.objectStoreNames.contains(s)){const key=s==='meta'?'key':'id';d.createObjectStore(s,{keyPath:key,autoIncrement:key==='id'});}})};
+  r.onsuccess=()=>res(r.result);
+  r.onerror=()=>{fallbackDB=fallbackDB||makeFallbackDB();res(fallbackDB)};
+ }catch(e){fallbackDB=fallbackDB||makeFallbackDB();res(fallbackDB)}
+})}
+async function tx(store,mode,fn){const d=await dbOpen();
+ if(d===fallbackDB){try{return await fn(d.transaction(store,mode).objectStore(store))}catch(e){throw e}}
+ return new Promise((res,rej)=>{const t=d.transaction(store,mode);const s=t.objectStore(store);let out;try{out=fn(s)}catch(e){rej(e);return}t.oncomplete=()=>res(out);t.onerror=()=>rej(t.error)})}
 const dbAll=s=>tx(s,'readonly',st=>new Promise((res,rej)=>{const r=st.getAll();r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)}));
 const dbPut=(s,v)=>tx(s,'readwrite',st=>st.put(v)); const dbDel=(s,k)=>tx(s,'readwrite',st=>st.delete(k));
 async function getMeta(key,def){const v=await tx('meta','readonly',s=>new Promise(r=>{const q=s.get(key);q.onsuccess=()=>r(q.result?.value??def)}));return v}
@@ -16,7 +43,7 @@ async function bills(){return (await dbAll('bills')).sort((a,b)=>String(b.savedA
 async function reminders(){return (await dbAll('reminders')).sort((a,b)=>String(a.date||'').localeCompare(String(b.date||'')))}
 function money(n){return '₹'+Number(n||0).toLocaleString('en-IN',{minimumFractionDigits:2,maximumFractionDigits:2}) }
 function esc(s){return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
-function today(){const d=new Date();return d.toISOString().slice(0,10)}
+function today(){const d=new Date();return [d.getFullYear(),String(d.getMonth()+1).padStart(2,'0'),String(d.getDate()).padStart(2,'0')].join('-')}
 function dateDisplay(v){if(!v)return '';const [y,m,d]=v.split('-');return `${d}/${m}/${y}`}
 function status(msg){const s=document.getElementById('status');if(s){s.textContent=msg;s.style.display='block';clearTimeout(window._st);window._st=setTimeout(()=>s.style.display='none',4500)}}
 function openWA(phone,msg){if(!/^\d{10}$/.test(phone)){status('Invalid 10-digit customer number.');return false}window.open('https://wa.me/91'+phone+'?text='+encodeURIComponent(msg),'_blank','noopener');return true}
