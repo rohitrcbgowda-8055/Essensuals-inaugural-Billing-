@@ -8,11 +8,34 @@
 <meta name="theme-color" content="#111">
 <title>TONI&GUY ESSENSUALS Billing</title>
 <style>
-*{box-sizing:border-box}body{margin:0;background:#f3f3f3;color:#171717;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif}
-.top{background:#111;color:#fff;padding:18px 16px;position:sticky;top:0;z-index:10}.brand{font-size:26px;font-weight:800;letter-spacing:1px}.sub{font-size:13px;letter-spacing:3px;margin-top:2px}.wrap{max-width:1100px;margin:auto;padding:16px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}.card{background:#fff;border-radius:16px;padding:16px;box-shadow:0 3px 14px #00000012;margin-bottom:16px}.title{font-size:18px;font-weight:800;margin-bottom:12px}.fields{display:grid;grid-template-columns:1fr 1fr;gap:10px}.field label{display:block;font-size:12px;font-weight:700;margin:0 0 5px}.field input,.field select{width:100%;padding:12px;border:1px solid #ccc;border-radius:10px;font-size:16px;background:#fff}.row{display:grid;grid-template-columns:1.4fr .8fr 42px;gap:8px;align-items:center;margin-bottom:8px}.row select,.row input{width:100%;padding:11px;border:1px solid #ccc;border-radius:10px;font-size:15px}.manual{display:none}.remove{border:0;background:#eee;border-radius:10px;height:42px;font-size:20px}.buttons{display:grid;grid-template-columns:repeat(2,1fr);gap:9px;margin-top:14px}.btn{border:0;border-radius:11px;padding:13px 10px;font-size:15px;font-weight:800;cursor:pointer}.dark{background:#111;color:#fff}.light{background:#eee;color:#111}.gold{background:#c9a227;color:#111}.status{min-height:22px;font-size:13px;font-weight:700;margin-top:10px}.preview{border:1px solid #ddd;padding:18px;max-width:500px;margin:auto}.center{text-align:center}.line{border-top:1px solid #ddd;margin:12px 0}.billtable{width:100%;border-collapse:collapse;font-size:14px}.billtable td{padding:6px 0}.right{text-align:right}.total{font-size:20px;font-weight:900}.muted{color:#666;font-size:12px}.saved{display:flex;justify-content:space-between;gap:8px;align-items:center;border-bottom:1px solid #eee;padding:10px 0}.saved:last-child{border:0}.saved button{border:0;border-radius:8px;padding:8px}.empty{color:#777;padding:10px 0}.smallbtn{border:0;border-radius:8px;padding:8px 10px;font-weight:700}.customer{padding:9px 0;border-bottom:1px solid #eee}.hint{font-size:12px;color:#666;margin-top:5px}
+*{box-sizing:border-box}
+body{margin:0;background:#f3f3f3;color:#171717;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif}
+.top{background:#111;color:#fff;padding:18px 16px;position:sticky;top:0;z-index:10}
+.brand{font-size:26px;font-weight:800;letter-spacing:1px}.sub{font-size:13px;letter-spacing:3px;margin-top:2px}
+.wrap{max-width:1100px;margin:auto;padding:16px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.card{background:#fff;border-radius:16px;padding:16px;box-shadow:0 3px 14px #00000012;margin-bottom:16px}
+.title{font-size:18px;font-weight:800;margin-bottom:12px}.fields{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.field label{display:block;font-size:12px;font-weight:700;margin:0 0 5px}
+.field input,.field select{width:100%;padding:12px;border:1px solid #ccc;border-radius:10px;font-size:16px;background:#fff}
+.row{display:grid;grid-template-columns:1.4fr .8fr 42px;gap:8px;align-items:center;margin-bottom:8px}
+.row select,.row input{width:100%;padding:11px;border:1px solid #ccc;border-radius:10px;font-size:15px}
+.manual{display:none}.remove{border:0;background:#eee;border-radius:10px;height:42px;font-size:20px}
+.buttons{display:grid;grid-template-columns:repeat(2,1fr);gap:9px;margin-top:14px}
+.btn{border:0;border-radius:11px;padding:13px 10px;font-size:15px;font-weight:800;cursor:pointer}
+.dark{background:#111;color:#fff}.light{background:#eee;color:#111}.gold{background:#c9a227;color:#111}
+.status{min-height:22px;font-size:13px;font-weight:700;margin-top:10px}
+.preview{border:1px solid #ddd;padding:18px;max-width:500px;margin:auto}.center{text-align:center}
+.line{border-top:1px solid #ddd;margin:12px 0}.billtable{width:100%;border-collapse:collapse;font-size:14px}
+.billtable td{padding:6px 0}.right{text-align:right}.total{font-size:20px;font-weight:900}.muted{color:#666;font-size:12px}
+.saved{display:flex;justify-content:space-between;gap:8px;align-items:center;border-bottom:1px solid #eee;padding:10px 0}
+.saved:last-child{border:0}.saved button{border:0;border-radius:8px;padding:8px}.empty{color:#777;padding:10px 0}
+.smallbtn{border:0;border-radius:8px;padding:8px 10px;font-weight:700}.customer{padding:9px 0;border-bottom:1px solid #eee}
+.hint{font-size:12px;color:#666;margin-top:5px}
 @media(max-width:750px){.grid{grid-template-columns:1fr}.fields{grid-template-columns:1fr}.row{grid-template-columns:1fr .75fr 42px}.buttons{grid-template-columns:1fr 1fr}.wrap{padding:10px}}
 @media print{
- body{background:#fff}.top,.no-print,.status{display:none!important}.wrap{margin:0;padding:0}.grid{display:block}.card:not(.print-card){display:none!important}.print-card{display:block!important;border:0;box-shadow:none;padding:0}.preview{border:0;max-width:none;padding:0}
+ body{background:#fff}.top,.no-print,.status{display:none!important}.wrap{margin:0;padding:0}.grid{display:block}
+ .card:not(.print-card){display:none!important}.print-card{display:block!important;border:0;box-shadow:none;padding:0}
+ .preview{border:0;max-width:none;padding:0}
 }
 </style>
 </head>
@@ -50,7 +73,7 @@
 
 <div class="card no-print">
 <div class="title">Saved Bills</div>
-<input id="billSearch" class="field input" style="width:100%;padding:12px;border:1px solid #ccc;border-radius:10px;font-size:16px" placeholder="Search invoice or customer">
+<input id="billSearch" style="width:100%;padding:12px;border:1px solid #ccc;border-radius:10px;font-size:16px" placeholder="Search invoice or customer">
 <div id="bills"></div>
 </div>
 
@@ -76,23 +99,34 @@ const SALON={brand:"TONI&GUY",sub:"ESSENSUALS",address:"1st Floor, 1st A Cross R
 const SERVICES=["Haircut","Hair Wash","Blow Dry","Hair Colour","Highlights","Global Colour","Root Touch-up","Hair Spa","Keratin","Smoothening","Facial","Cleanup","Manicure","Pedicure","Beard Trim","Styling","Makeup","Other / Manual Entry"];
 let db={bills:[],customers:{},seq:0,rows:[]};
 
-function read(){try{const x=JSON.parse(localStorage.getItem(KEY)||"null");if(x)db=Object.assign(db,x)}catch(e){console.error(e)}}
+function read(){
+ try{
+  const x=JSON.parse(localStorage.getItem(KEY)||"null");
+  if(x){
+   db=Object.assign({bills:[],customers:{},seq:0,rows:[]},x);
+   db.bills=Array.isArray(db.bills)?db.bills:[];
+   db.customers=db.customers&&typeof db.customers==="object"?db.customers:{};
+   db.rows=Array.isArray(db.rows)?db.rows:[];
+  }
+ }catch(e){console.error(e)}
+}
 function write(){localStorage.setItem(KEY,JSON.stringify(db))}
 function invoice(){db.seq=(Number(db.seq)||0)+1;write();return "ESS-"+new Date().getFullYear()+"-"+String(db.seq).padStart(5,"0")}
 function today(){return new Date().toISOString().slice(0,10)}
 function esc(s){return String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]))}
-function status(s){$("status").textContent=s;setTimeout(()=>{if($("status").textContent===s)$("status").textContent=""},3500)}
+function status(s){
+ $("status").textContent=s;
+ setTimeout(()=>{if($("status").textContent===s)$("status").textContent=""},3500)
+}
 
 function serviceSelect(value){
- let h='<select class="svc">';
- h+='<option value="">Select service</option>';
+ let h='<select class="svc"><option value="">Select service</option>';
  SERVICES.forEach(x=>h+='<option value="'+esc(x)+'" '+(x===value?"selected":"")+'>'+esc(x)+'</option>');
- h+='</select>';return h;
+ return h+'</select>';
 }
 function addRow(item={service:"",manual:"",price:""}){
  const id="r"+Date.now()+Math.random().toString(16).slice(2);
- db.rows.push({id,...item});
- renderRows();update();
+ db.rows.push({id,...item});renderRows();update();
 }
 function renderRows(){
  const box=$("services");box.innerHTML="";
@@ -102,7 +136,7 @@ function renderRows(){
    '<input class="price" type="number" min="0" step="0.01" inputmode="decimal" placeholder="₹ Price" value="'+esc(r.price)+'">'+
    '<button class="remove" type="button" aria-label="Remove service">×</button>'+
    '<input class="manual" type="text" placeholder="Type service name manually" value="'+esc(r.manual)+'">';
-  const sel=div.querySelector(".svc"), price=div.querySelector(".price"), man=div.querySelector(".manual"), rem=div.querySelector(".remove");
+  const sel=div.querySelector(".svc"),price=div.querySelector(".price"),man=div.querySelector(".manual"),rem=div.querySelector(".remove");
   function syncManual(){man.style.display=sel.value==="Other / Manual Entry"?"block":"none";man.style.gridColumn="1 / 3"}
   sel.onchange=()=>{r.service=sel.value;syncManual();update()};
   price.oninput=()=>{r.price=price.value;update()};
@@ -112,84 +146,128 @@ function renderRows(){
  });
 }
 function data(){
- const rows=db.rows.map(r=>({service:r.service==="Other / Manual Entry"?(r.manual||"Manual Service"):r.service,price:Number(r.price)||0})).filter(r=>r.service&&r.price>=0);
- const subtotal=rows.reduce((a,r)=>a+r.price,0), pct=Math.max(0,Math.min(100,Number($("discount").value)||0)), disc=subtotal*pct/100;
- return {invoice:$("invoice").value,date:$("date").value,name:$("name").value.trim(),phone:$("phone").value.replace(/\D/g,""),staff:$("staff").value.trim(),discountPct:pct,rows,subtotal,discount:disc,total:subtotal-disc};
+ const rows=db.rows.map(r=>({
+  service:r.service==="Other / Manual Entry"?(r.manual||"Manual Service"):r.service,
+  price:Number(r.price)||0
+ })).filter(r=>r.service&&r.price>=0);
+ const subtotal=rows.reduce((a,r)=>a+r.price,0);
+ const pct=Math.max(0,Math.min(100,Number($("discount").value)||0));
+ const disc=subtotal*pct/100;
+ return {invoice:$("invoice").value,date:$("date").value,name:$("name").value.trim(),
+ phone:$("phone").value.replace(/\D/g,""),staff:$("staff").value.trim(),
+ discountPct:pct,rows,subtotal,discount:disc,total:subtotal-disc};
 }
-function valid(d){if(!d.invoice||!d.date||!d.name||!/^\d{10}$/.test(d.phone)||!d.rows.length){status("Please enter customer name, 10-digit phone and at least one service.");return false}return true}
+function valid(d){
+ if(!d.invoice||!d.date||!d.name||!(/^\d{10}$/.test(d.phone))||!d.rows.length){
+  status("Please enter customer name, 10-digit phone and at least one service.");
+  return false;
+ }
+ return true;
+}
 function money(n){return "₹"+Number(n).toFixed(2)}
 function update(){
  const d=data();
- $("preview").innerHTML='<div class="center"><b style="font-size:24px">'+SALON.brand+'</b><div style="letter-spacing:3px">'+SALON.sub+'</div><div class="muted">'+esc(SALON.address)+'</div><div class="muted">Ph: '+SALON.phone+'</div></div><div class="line"></div>'+
- '<table class="billtable"><tr><td>Invoice No.</td><td class="right">'+esc(d.invoice)+'</td></tr><tr><td>Date</td><td class="right">'+esc(d.date)+'</td></tr><tr><td>Customer</td><td class="right">'+esc(d.name||"-")+'</td></tr><tr><td>Phone</td><td class="right">+91 '+esc(d.phone||"-")+'</td></tr><tr><td>Staff</td><td class="right">'+esc(d.staff||"-")+'</td></tr></table><div class="line"></div>'+
- '<table class="billtable"><tbody>'+d.rows.map(r=>'<tr><td>'+esc(r.service)+'</td><td class="right">'+money(r.price)+'</td></tr>').join("")+'</tbody></table><div class="line"></div>'+
- '<table class="billtable"><tr><td>Subtotal</td><td class="right">'+money(d.subtotal)+'</td></tr><tr><td>Discount ('+d.discountPct+'%)</td><td class="right">-'+money(d.discount)+'</td></tr><tr class="total"><td>Total</td><td class="right">'+money(d.total)+'</td></tr></table><div class="line"></div><div class="center muted">Thank you for visiting TONI&GUY ESSENSUALS</div>';
+ $("preview").innerHTML=
+ '<div class="center"><b style="font-size:24px">'+SALON.brand+'</b><div style="letter-spacing:3px">'+SALON.sub+
+ '</div><div class="muted">'+esc(SALON.address)+'</div><div class="muted">Ph: '+SALON.phone+
+ '</div></div><div class="line"></div>'+
+ '<table class="billtable"><tr><td>Invoice No.</td><td class="right">'+esc(d.invoice)+
+ '</td></tr><tr><td>Date</td><td class="right">'+esc(d.date)+
+ '</td></tr><tr><td>Customer</td><td class="right">'+esc(d.name||"-")+
+ '</td></tr><tr><td>Phone</td><td class="right">+91 '+esc(d.phone||"-")+
+ '</td></tr><tr><td>Staff</td><td class="right">'+esc(d.staff||"-")+
+ '</td></tr></table><div class="line"></div>'+
+ '<table class="billtable"><tbody>'+d.rows.map(r=>'<tr><td>'+esc(r.service)+
+ '</td><td class="right">'+money(r.price)+'</td></tr>').join("")+
+ '</tbody></table><div class="line"></div>'+
+ '<table class="billtable"><tr><td>Subtotal</td><td class="right">'+money(d.subtotal)+
+ '</td></tr><tr><td>Discount ('+d.discountPct+'%)</td><td class="right">-'+money(d.discount)+
+ '</td></tr><tr class="total"><td>Total</td><td class="right">'+money(d.total)+
+ '</td></tr></table><div class="line"></div><div class="center muted">Thank you for visiting TONI&GUY ESSENSUALS</div>';
 }
 function saveBill(show=true){
  const d=data();if(!valid(d))return false;
- const i=db.bills.findIndex(x=>x.invoice===d.invoice);if(i>=0)db.bills[i]=d;else db.bills.unshift(d);
+ const i=db.bills.findIndex(x=>x.invoice===d.invoice);
+ if(i>=0)db.bills[i]=d;else db.bills.unshift(d);
  db.customers[d.phone]={name:d.name,phone:d.phone,lastVisit:d.date,total:d.total};
- write();renderBills();renderCustomers();if(show)status("Bill saved successfully.");return true;
+ write();renderBills();renderCustomers();
+ if(show)status("Bill saved successfully.");
+ return true;
 }
 function renderBills(){
- const q=($("billSearch").value||"").toLowerCase(), arr=db.bills.filter(b=>(b.invoice+" "+b.name+" "+b.phone).toLowerCase().includes(q));
- $("bills").innerHTML=arr.length?arr.map(b=>'<div class="saved"><div><b>'+esc(b.invoice)+'</b><br>'+esc(b.name)+' · '+money(b.total)+'</div><div><button class="smallbtn" type="button" onclick="loadBill(\''+esc(b.invoice)+'\')">Load</button> <button class="smallbtn" type="button" onclick="deleteBill(\''+esc(b.invoice)+'\')">Delete</button></div></div>').join(""):'<div class="empty">No saved bills.</div>';
+ const q=($("billSearch").value||"").toLowerCase();
+ const arr=db.bills.filter(b=>(b.invoice+" "+b.name+" "+b.phone).toLowerCase().includes(q));
+ $("bills").innerHTML=arr.length?arr.map(b=>
+  '<div class="saved"><div><b>'+esc(b.invoice)+'</b><br>'+esc(b.name)+' · '+money(b.total)+
+  '</div><div><button class="smallbtn" type="button" onclick="loadBill(\''+esc(b.invoice)+'\')">Load</button> '+
+  '<button class="smallbtn" type="button" onclick="deleteBill(\''+esc(b.invoice)+'\')">Delete</button></div></div>'
+ ).join(""):'<div class="empty">No saved bills.</div>';
 }
 function loadBill(id){
  const b=db.bills.find(x=>x.invoice===id);if(!b)return;
- $("invoice").value=b.invoice;$("date").value=b.date;$("name").value=b.name;$("phone").value=b.phone;$("staff").value=b.staff;$("discount").value=b.discountPct;
- db.rows=b.rows.map((r,j)=>({id:"loaded"+j,service:SERVICES.includes(r.service)?r.service:"Other / Manual Entry",manual:SERVICES.includes(r.service)?"":r.service,price:r.price}));
+ $("invoice").value=b.invoice;$("date").value=b.date;$("name").value=b.name;$("phone").value=b.phone;
+ $("staff").value=b.staff;$("discount").value=b.discountPct;
+ db.rows=b.rows.map((r,j)=>({
+  id:"loaded"+j,
+  service:SERVICES.includes(r.service)?r.service:"Other / Manual Entry",
+  manual:SERVICES.includes(r.service)?"":r.service,
+  price:r.price
+ }));
  renderRows();update();status("Bill loaded.");
 }
-function deleteBill(id){if(!confirm("Delete this saved bill?"))return;db.bills=db.bills.filter(x=>x.invoice!==id);write();renderBills();status("Bill deleted.")}
+function deleteBill(id){
+ if(!confirm("Delete this saved bill?"))return;
+ db.bills=db.bills.filter(x=>x.invoice!==id);write();renderBills();status("Bill deleted.");
+}
 function renderCustomers(){
  const arr=Object.values(db.customers).sort((a,b)=>String(b.lastVisit).localeCompare(String(a.lastVisit)));
- $("customers").innerHTML=arr.length?arr.map(c=>'<div class="customer"><b>'+esc(c.name)+'</b><br>+91 '+esc(c.phone)+' · Last visit: '+esc(c.lastVisit)+' · '+money(c.total)+'</div>').join(""):'<div class="empty">No customers saved yet.</div>';
+ $("customers").innerHTML=arr.length?arr.map(c=>
+  '<div class="customer"><b>'+esc(c.name)+'</b><br>+91 '+esc(c.phone)+
+  ' · Last visit: '+esc(c.lastVisit)+' · '+money(c.total)+'</div>'
+ ).join(""):'<div class="empty">No customers saved yet.</div>';
 }
 function newBill(){
- $("invoice").value=invoice();$("date").value=today();$("name").value="";$("phone").value="";$("staff").value="";$("discount").value=30;db.rows=[];addRow();status("New bill ready.");
+ $("invoice").value=invoice();$("date").value=today();$("name").value="";$("phone").value="";
+ $("staff").value="";$("discount").value=30;db.rows=[];addRow();status("New bill ready.");
 }
-function printBill(saveFirst=false){
+function printBill(){
  const d=data();if(!valid(d))return;
- if(saveFirst)saveBill(false);
+ saveBill(false);window.print();
+}
+function savePDF(){
+ const d=data();if(!valid(d))return;
+ saveBill(false);
+ status("Choose 'Save to Files' or 'Save as PDF' in the print screen.");
  window.print();
 }
 function exportBackup(){
- const blob=new Blob([JSON.stringify(db,null,2)],{type:"application/json"}),a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="essensuals-billing-backup-"+today()+".json";a.click();URL.revokeObjectURL(a.href);status("Backup exported.");
+ const blob=new Blob([JSON.stringify(db,null,2)],{type:"application/json"});
+ const a=document.createElement("a");
+ a.href=URL.createObjectURL(blob);
+ a.download="essensuals-billing-backup-"+today()+".json";
+ document.body.appendChild(a);a.click();a.remove();
+ setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+ status("Backup exported.");
 }
-function buildSVG(d){
- const w=700,p=38;let y=55,s='<svg xmlns="http://www.w3.org/2000/svg" width="'+w+'" viewBox="0 0 '+w+' 900" fill="white"><rect width="100%" height="100%" fill="white"/><g fill="#111" font-family="Arial">';
- s+='<text x="'+p+'" y="'+y+'" font-size="30" font-weight="bold">'+esc(SALON.brand)+'</text>';y+=28;s+='<text x="'+p+'" y="'+y+'" font-size="15" letter-spacing="4">'+SALON.sub+'</text>';y+=35;
- s+='<text x="'+p+'" y="'+y+'" font-size="13">'+esc(d.invoice)+'   '+esc(d.date)+'</text>';y+=24;s+='<text x="'+p+'" y="'+y+'" font-size="13">'+esc(d.name)+'   +91 '+esc(d.phone)+'</text>';y+=35;
- d.rows.forEach(r=>{s+='<text x="'+p+'" y="'+y+'" font-size="16">'+esc(r.service)+'</text><text x="650" y="'+y+'" text-anchor="end" font-size="16">'+money(r.price)+'</text>';y+=27});
- y+=15;s+='<line x1="'+p+'" x2="650" y1="'+y+'" y2="'+y+'" stroke="#ccc"/>';y+=30;
- s+='<text x="'+p+'" y="'+y+'" font-size="15">Subtotal</text><text x="650" y="'+y+'" text-anchor="end" font-size="15">'+money(d.subtotal)+'</text>';y+=25;
- s+='<text x="'+p+'" y="'+y+'" font-size="15">Discount ('+d.discountPct+'%)</text><text x="650" y="'+y+'" text-anchor="end" font-size="15">-'+money(d.discount)+'</text>';y+=35;
- s+='<text x="'+p+'" y="'+y+'" font-size="22" font-weight="bold">TOTAL</text><text x="650" y="'+y+'" text-anchor="end" font-size="22" font-weight="bold">'+money(d.total)+'</text>';y+=45;
- s+='<text x="'+p+'" y="'+y+'" font-size="12">'+esc(SALON.address)+'</text><text x="'+p+'" y="'+(y+20)+'" font-size="12">Ph: '+SALON.phone+'</text></g></svg>';return s;
-}
-async function svgPNG(d){
- const blob=new Blob([buildSVG(d)],{type:"image/svg+xml"}),url=URL.createObjectURL(blob);
- const img=new Image();await new Promise((res,rej)=>{img.onload=res;img.onerror=rej;img.src=url});
- const c=document.createElement("canvas");c.width=1400;c.height=Math.ceil(1400*900/700);c.getContext("2d").fillStyle="#fff";c.getContext("2d").fillRect(0,0,c.width,c.height);c.getContext("2d").drawImage(img,0,0,c.width,c.height);URL.revokeObjectURL(url);
- return await new Promise(res=>c.toBlob(res,"image/png"));
-}
-async function whatsapp(){
- const d=data();if(!valid(d))return;saveBill(false);
- const msg="Hello "+d.name+", thank you for visiting TONI&GUY ESSENSUALS. Invoice "+d.invoice+" | Total "+money(d.total)+".";
+function whatsapp(){
+ const d=data();
+ if(!valid(d))return;
+ // Save/update the bill before opening WhatsApp.
+ if(!saveBill(false))return;
+ const msg=
+  "Hello "+d.name+", thank you for visiting TONI&GUY ESSENSUALS.\n\n"+
+  "Invoice: "+d.invoice+"\n"+
+  "Total: "+money(d.total)+"\n\n"+
+  "Thank you for choosing us!";
  const waURL="https://wa.me/91"+d.phone+"?text="+encodeURIComponent(msg);
- try{
-  const file=new File([await svgPNG(d)],"Essensuals-"+d.invoice+".png",{type:"image/png"});
-  if(navigator.share){await navigator.share({files:[file],text:msg,title:"ESSENSUALS Bill"});status("Share sheet opened. Choose WhatsApp.");return}
- }catch(e){console.log(e)}
  window.location.href=waURL;
 }
 function bind(){
  $("add").onclick=()=>addRow();
  $("save").onclick=()=>saveBill(true);
- $("wa").onclick=()=>whatsapp().catch(()=>window.location.href="https://wa.me/91"+data().phone);
- $("print").onclick=()=>printBill(false);
- $("pdf").onclick=()=>{const d=data();if(!valid(d))return;saveBill(false);window.print()};
+ $("wa").onclick=whatsapp;
+ $("print").onclick=printBill;
+ $("pdf").onclick=savePDF;
  $("new").onclick=newBill;
  $("billSearch").oninput=renderBills;
  $("refresh").onclick=renderCustomers;
@@ -197,7 +275,11 @@ function bind(){
  ["name","phone","staff","discount","date"].forEach(id=>$(id).oninput=update);
  $("phone").oninput=e=>{e.target.value=e.target.value.replace(/\D/g,"").slice(0,10);update()};
 }
-function init(){read();bind();$("invoice").value=invoice();$("date").value=today();db.rows=[];addRow();renderBills();renderCustomers();update()}
+function init(){
+ read();bind();
+ $("invoice").value=invoice();$("date").value=today();db.rows=[];addRow();
+ renderBills();renderCustomers();update();
+}
 document.addEventListener("DOMContentLoaded",init);
 </script>
 </body>
