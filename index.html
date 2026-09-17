@@ -358,13 +358,18 @@ async function renderCustomers(){
 }
 
 async function renderAppointments(){
+  // Load future appointments without relying on exact status capitalization.
+  // This keeps Pending/Confirmed appointments visible and excludes Completed/Cancelled.
   const {data,error}=await sb.from("appointments")
     .select("id,customer_id,appointment_date,appointment_time,status,service,notes,customers(name,phone)")
     .gte("appointment_date",today())
-    .neq("status","completed")
-    .order("appointment_date",{ascending:true}).order("appointment_time",{ascending:true}).limit(30);
+    .order("appointment_date",{ascending:true}).order("appointment_time",{ascending:true}).limit(50);
   if(error){$("appointments").innerHTML='<div class="empty">Unable to load appointments: '+esc(error.message)+'</div>';return}
-  $("appointments").innerHTML=(data||[]).length?(data||[]).map(a=>{
+  const upcoming=(data||[]).filter(a=>{
+    const st=String(a.status||"").trim().toLowerCase();
+    return st!=="completed" && st!=="cancelled";
+  });
+  $("appointments").innerHTML=upcoming.length?upcoming.map(a=>{
     const c=Array.isArray(a.customers)?a.customers[0]:a.customers;
     return '<div class="appointment" onclick="selectAppointment(\''+a.id+'\')">'+
       '<b>'+esc(c?.name||"Customer")+'</b> · +91 '+esc(c?.phone||"")+
